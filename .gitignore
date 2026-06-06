@@ -1,0 +1,41 @@
+# Keil MDK - Build Output
+Objects/
+Listings/
+
+# Keil MDK - Debug Configuration
+DebugConfig/
+
+# Keil MDK - User GUI Layout (personal settings, not project-specific)
+*.uvguix.*
+
+# Keil MDK - Generated Files
+*.crf
+*.d
+*.o
+*.axf
+*.hex
+*.lst
+*.map
+*.lnp
+*.dep
+*.sct
+*.build_log.htm
+*.htm
+*.dbgconf
+
+# JLink / ST-Link Logs
+JLink.log
+JLinkLog.txt
+*.jlink
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Generated Files
+Thumbs.db
+Desktop.ini
+.DS_Store
