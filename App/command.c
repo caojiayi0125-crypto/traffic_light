@@ -2,7 +2,6 @@
 #include "Serial.h"
 #include "scheduler.h"
 #include <string.h>
-#include <stdio.h>
 
 #define CMD_BUF_SIZE 64
 

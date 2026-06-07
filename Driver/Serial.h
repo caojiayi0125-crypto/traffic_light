@@ -70,4 +70,6 @@ uint16_t Serial_Send(Serial_TypeDef serial, const uint8_t *data, uint16_t length
   */
 uint16_t Serial_Receive(Serial_TypeDef serial, uint8_t *data, uint16_t length);
 
+void Serial_Printf(Serial_TypeDef serial, const char *format, ...);
+
 #endif

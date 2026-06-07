@@ -1,4 +1,7 @@
 #include "Serial.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 
 #define SERIAL_USE_USART1      SERIAL_PORT1_ENABLED
 #define SERIAL_USE_USART2      SERIAL_PORT2_ENABLED
@@ -301,6 +304,18 @@ uint16_t Serial_Receive(Serial_TypeDef serial, uint8_t *data, uint16_t length)
 	}
 
 	return count;
+}
+
+void Serial_Printf(Serial_TypeDef serial, const char *format, ...)
+{
+	char buf[128];
+	va_list args;
+
+	va_start(args, format);
+	vsprintf(buf, format, args);
+	va_end(args);
+
+	Serial_Send(serial, (uint8_t *)buf, (uint16_t)strlen(buf));
 }
 
 #if SERIAL_USE_USART1
