@@ -3,50 +3,47 @@
 #include <stdarg.h>
 #include <string.h>
 
-#define SERIAL_USE_USART1      SERIAL_PORT1_ENABLED  /**< 是否启用USART1。 */
-#define SERIAL_USE_USART2      SERIAL_PORT2_ENABLED  /**< 是否启用USART2。 */
+#define SERIAL_USE_USART1      SERIAL_PORT1_ENABLED
+#define SERIAL_USE_USART2      SERIAL_PORT2_ENABLED
 
-#define SERIAL1_USART          USART1                /**< USART1外设基地址。 */
-#define SERIAL1_USART_CLOCK    RCC_APB2Periph_USART1 /**< USART1时钟。 */
-#define SERIAL1_IRQ            USART1_IRQn           /**< USART1中断号。 */
-#define SERIAL1_GPIO_CLOCK     RCC_APB2Periph_GPIOA  /**< USART1 GPIO时钟。 */
-#define SERIAL1_GPIO_PORT      GPIOA                 /**< USART1 GPIO端口。 */
-#define SERIAL1_TX_GPIO_PIN    GPIO_Pin_9            /**< USART1 TX引脚：PA9。 */
-#define SERIAL1_RX_GPIO_PIN    GPIO_Pin_10           /**< USART1 RX引脚：PA10。 */
+#define SERIAL1_USART          USART1
+#define SERIAL1_USART_CLOCK    RCC_APB2Periph_USART1
+#define SERIAL1_IRQ            USART1_IRQn
+#define SERIAL1_GPIO_CLOCK     RCC_APB2Periph_GPIOA
+#define SERIAL1_GPIO_PORT      GPIOA
+#define SERIAL1_TX_GPIO_PIN    GPIO_Pin_9
+#define SERIAL1_RX_GPIO_PIN    GPIO_Pin_10
 
-#define SERIAL2_USART          USART2                /**< USART2外设基地址。 */
-#define SERIAL2_USART_CLOCK    RCC_APB1Periph_USART2 /**< USART2时钟。 */
-#define SERIAL2_IRQ            USART2_IRQn           /**< USART2中断号。 */
-#define SERIAL2_GPIO_CLOCK     RCC_APB2Periph_GPIOA  /**< USART2 GPIO时钟。 */
-#define SERIAL2_GPIO_PORT      GPIOA                 /**< USART2 GPIO端口。 */
-#define SERIAL2_TX_GPIO_PIN    GPIO_Pin_2            /**< USART2 TX引脚：PA2。 */
-#define SERIAL2_RX_GPIO_PIN    GPIO_Pin_3            /**< USART2 RX引脚：PA3。 */
+#define SERIAL2_USART          USART2
+#define SERIAL2_USART_CLOCK    RCC_APB1Periph_USART2
+#define SERIAL2_IRQ            USART2_IRQn
+#define SERIAL2_GPIO_CLOCK     RCC_APB2Periph_GPIOA
+#define SERIAL2_GPIO_PORT      GPIOA
+#define SERIAL2_TX_GPIO_PIN    GPIO_Pin_2
+#define SERIAL2_RX_GPIO_PIN    GPIO_Pin_3
 
-/**
-  * @brief 串口接收环形缓冲区结构体。
-  */
 typedef struct
 {
-	volatile uint8_t *buffer;     /**< 缓冲区数据指针。 */
-	uint16_t size;                /**< 缓冲区容量。 */
-	volatile uint16_t writeIndex; /**< 写指针（ISR写入）。 */
-	volatile uint16_t readIndex;  /**< 读指针（主循环读出）。 */
+	volatile uint8_t *buffer;
+	uint16_t size;
+	volatile uint16_t writeIndex;
+	volatile uint16_t readIndex;
 } Serial_RxBufferTypeDef;
 
 #if SERIAL_USE_USART1
-static volatile uint8_t Serial1_Buffer[SERIAL1_BUFFER_SIZE];   /**< USART1接收缓冲区。 */
-static Serial_RxBufferTypeDef Serial1_RxBuffer;                /**< USART1缓冲区控制结构。 */
+static volatile uint8_t Serial1_Buffer[SERIAL1_BUFFER_SIZE];
+static Serial_RxBufferTypeDef Serial1_RxBuffer;
 #endif
 
 #if SERIAL_USE_USART2
-static volatile uint8_t Serial2_Buffer[SERIAL2_BUFFER_SIZE];   /**< USART2接收缓冲区。 */
-static Serial_RxBufferTypeDef Serial2_RxBuffer;                /**< USART2缓冲区控制结构。 */
+static volatile uint8_t Serial2_Buffer[SERIAL2_BUFFER_SIZE];
+static Serial_RxBufferTypeDef Serial2_RxBuffer;
 #endif
 
 /**
-  * @brief  根据串口标识符获取USART外设指针。
-  * @param  serial 串口硬件标识符。
-  * @retval USART外设指针，端口未启用或无效时返回0。
+  * @brief  Get USART peripheral pointer by serial identifier.
+  * @param  serial Serial hardware identifier.
+  * @retval USART peripheral pointer. Returns 0 when the port is disabled or invalid.
   */
 static USART_TypeDef *Serial_GetUsart(Serial_TypeDef serial)
 {
@@ -63,9 +60,9 @@ static USART_TypeDef *Serial_GetUsart(Serial_TypeDef serial)
 }
 
 /**
-  * @brief  根据串口标识符获取接收缓冲区指针。
-  * @param  serial 串口硬件标识符。
-  * @retval 接收缓冲区指针，端口未启用或无效时返回0。
+  * @brief  Get RX buffer by serial identifier.
+  * @param  serial Serial hardware identifier.
+  * @retval RX buffer pointer. Returns 0 when the port is disabled or invalid.
   */
 static Serial_RxBufferTypeDef *Serial_GetRxBuffer(Serial_TypeDef serial)
 {
@@ -82,11 +79,11 @@ static Serial_RxBufferTypeDef *Serial_GetRxBuffer(Serial_TypeDef serial)
 }
 
 /**
-  * @brief  将接收到的一个字节存入指定接收缓冲区。
-  * @param  rxBuffer 接收缓冲区指针。
-  * @param  data 接收到的字节。
-  * @retval 无。
-  * @note   缓冲区满时，最旧未读的字节将被覆盖（丢弃策略）。
+  * @brief  Store one received byte into the selected RX buffer.
+  * @param  rxBuffer RX buffer pointer.
+  * @param  data Received byte.
+  * @retval None.
+  * @note   When the buffer is full, the oldest unread byte is overwritten.
   */
 static void Serial_RxBufferPush(Serial_RxBufferTypeDef *rxBuffer, uint8_t data)
 {
@@ -108,9 +105,9 @@ static void Serial_RxBufferPush(Serial_RxBufferTypeDef *rxBuffer, uint8_t data)
 }
 
 /**
-  * @brief  配置USART1的GPIO引脚。
-  * @param  无。
-  * @retval 无。
+  * @brief  Configure GPIO pins for USART1.
+  * @param  None.
+  * @retval None.
   */
 #if SERIAL_USE_USART1
 static void Serial1_GPIOInit(void)
@@ -131,9 +128,9 @@ static void Serial1_GPIOInit(void)
 #endif
 
 /**
-  * @brief  配置USART2的GPIO引脚。
-  * @param  无。
-  * @retval 无。
+  * @brief  Configure GPIO pins for USART2.
+  * @param  None.
+  * @retval None.
   */
 #if SERIAL_USE_USART2
 static void Serial2_GPIOInit(void)
@@ -154,15 +151,9 @@ static void Serial2_GPIOInit(void)
 #endif
 
 /**
-  * @brief  配置USART通用参数并启用。
-  * @param  usart USART外设指针。
-  * @param  baudRate 波特率。
-  * @param  wordLength 数据位长度。
-  * @param  stopBits 停止位。
-  * @param  parity 校验位。
-  * @param  flowControl 硬件流控。
-  * @param  mode 通信模式（TX/RX）。
-  * @retval 无。
+  * @brief  Apply common USART configuration.
+  * @param  usart USART peripheral pointer.
+  * @retval None.
   */
 static void Serial_UsartInit(USART_TypeDef *usart, uint32_t baudRate, uint16_t wordLength, uint16_t stopBits, uint16_t parity, uint16_t flowControl, uint16_t mode)
 {
@@ -181,9 +172,9 @@ static void Serial_UsartInit(USART_TypeDef *usart, uint32_t baudRate, uint16_t w
 }
 
 /**
-  * @brief  配置指定USART中断的NVIC。
-  * @param  irqChannel 中断通道号。
-  * @retval 无。
+  * @brief  Configure NVIC for selected USART interrupt.
+  * @param  irqChannel IRQ channel number.
+  * @retval None.
   */
 static void Serial_NVICInit(uint8_t irqChannel)
 {
@@ -199,9 +190,9 @@ static void Serial_NVICInit(uint8_t irqChannel)
 }
 
 /**
-  * @brief  初始化单个串口的全部硬件（GPIO + USART + NVIC）。
-  * @param  serial 串口硬件标识符。
-  * @retval 无。
+  * @brief  Initialize one serial port.
+  * @param  serial Serial hardware identifier.
+  * @retval None.
   */
 static void Serial_InitPort(Serial_TypeDef serial)
 {
@@ -245,9 +236,9 @@ static void Serial_InitPort(Serial_TypeDef serial)
 }
 
 /**
-  * @brief  根据SERIAL_USE_MODE初始化已启用的串口。
-  * @param  无。
-  * @retval 无。
+  * @brief  Initialize enabled serial ports according to SERIAL_USE_MODE.
+  * @param  None.
+  * @retval None.
   */
 void Serial_Init(void)
 {
@@ -261,11 +252,11 @@ void Serial_Init(void)
 }
 
 /**
-  * @brief  通过指定串口发送数据。
-  * @param  serial 串口硬件标识符。
-  * @param  data 待发送的数据缓冲区。
-  * @param  length 发送的字节数。
-  * @retval 实际发送的字节数。
+  * @brief  Send data through the selected serial port.
+  * @param  serial Serial hardware identifier.
+  * @param  data Data buffer to send.
+  * @param  length Number of bytes to send.
+  * @retval Number of bytes sent.
   */
 uint16_t Serial_Send(Serial_TypeDef serial, const uint8_t *data, uint16_t length)
 {
@@ -289,11 +280,11 @@ uint16_t Serial_Send(Serial_TypeDef serial, const uint8_t *data, uint16_t length
 }
 
 /**
-  * @brief  从指定串口的接收缓冲区读取数据。
-  * @param  serial 串口硬件标识符。
-  * @param  data 目标缓冲区。
-  * @param  length 最多读取的字节数。
-  * @retval 实际读取的字节数。
+  * @brief  Read data from the selected serial port receive buffer.
+  * @param  serial Serial hardware identifier.
+  * @param  data Destination buffer.
+  * @param  length Maximum number of bytes to read.
+  * @retval Number of bytes read.
   */
 uint16_t Serial_Receive(Serial_TypeDef serial, uint8_t *data, uint16_t length)
 {
@@ -315,13 +306,6 @@ uint16_t Serial_Receive(Serial_TypeDef serial, uint8_t *data, uint16_t length)
 	return count;
 }
 
-/**
-  * @brief  通过指定串口发送格式化字符串。
-  * @param  serial 串口硬件标识符。
-  * @param  format 格式化字符串（printf风格）。
-  * @param  ... 可变参数列表。
-  * @retval 无。
-  */
 void Serial_Printf(Serial_TypeDef serial, const char *format, ...)
 {
 	char buf[128];
@@ -336,9 +320,9 @@ void Serial_Printf(Serial_TypeDef serial, const char *format, ...)
 
 #if SERIAL_USE_USART1
 /**
-  * @brief  USART1中断服务函数。
-  * @param  无。
-  * @retval 无。
+  * @brief  USART1 interrupt handler.
+  * @param  None.
+  * @retval None.
   */
 void USART1_IRQHandler(void)
 {
@@ -352,9 +336,9 @@ void USART1_IRQHandler(void)
 
 #if SERIAL_USE_USART2
 /**
-  * @brief  USART2中断服务函数。
-  * @param  无。
-  * @retval 无。
+  * @brief  USART2 interrupt handler.
+  * @param  None.
+  * @retval None.
   */
 void USART2_IRQHandler(void)
 {

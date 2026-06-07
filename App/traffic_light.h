@@ -11,20 +11,36 @@
 #define RED_TIME      30
 
 /**
-  * @brief  初始化交通信号灯系统。
-  * @note   配置TIM2产生1秒时基信号、熄灭所有LED并清除OLED屏幕。
-  * @param  无。
-  * @retval 无。
+  * @brief 交通信号灯状态枚举。
   */
-void TrafficLight_Init(void);
+typedef enum {
+	STATE_GREEN,   /**< 绿灯状态。 */
+	STATE_YELLOW,  /**< 黄灯状态。 */
+	STATE_RED      /**< 红灯状态。 */
+} TrafficState;
+
+/** @brief 1秒时基标志（TIM2中断置1，主循环清零）。 */
+extern volatile uint8_t tim1sFlag;
 
 /**
-  * @brief  运行交通信号灯主循环（永不返回）。
-  * @note   按照 绿灯(30s)→黄灯(3s)→红灯(30s) 的顺序循环切换。
-  *         由TIM2的1秒时基信号驱动，每秒更新LED、串口日志和OLED倒计时显示。
+  * @brief  初始化TIM2产生1秒时基中断。
   * @param  无。
   * @retval 无。
   */
-void TrafficLight_Run(void);
+void TIM2_Init(void);
+
+/**
+  * @brief  根据当前状态点亮对应的LED。
+  * @param  state 当前交通灯状态。
+  * @retval 无。
+  */
+void set_led_by_state(TrafficState state);
+
+/**
+  * @brief  熄灭所有LED。
+  * @param  无。
+  * @retval 无。
+  */
+void led_all_off(void);
 
 #endif
