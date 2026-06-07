@@ -3,29 +3,33 @@
 
 #include "stm32f10x.h"
 
+/** @brief OLED的GPIO时钟。 */
 #define OLED_GPIO_CLOCK     RCC_APB2Periph_GPIOB
+/** @brief OLED的GPIO端口。 */
 #define OLED_GPIO_PORT      GPIOB
+/** @brief OLED的SCL引脚。 */
 #define OLED_SCL_GPIO_PIN   GPIO_Pin_8
+/** @brief OLED的SDA引脚。 */
 #define OLED_SDA_GPIO_PIN   GPIO_Pin_9
 
 /**
-  * @brief  Initialize OLED GPIO and controller.
-  * @param  None.
-  * @retval None.
+  * @brief  初始化OLED的GPIO引脚及SSD1306控制器。
+  * @param  无。
+  * @retval 无。
   */
 void OLED_Init(void);
 
 /**
-  * @brief  Clear the whole OLED screen.
-  * @param  None.
-  * @retval None.
+  * @brief  清除整个OLED屏幕。
+  * @param  无。
+  * @retval 无。
   */
 void OLED_Clear(void);
 
 /**
-  * @brief  Show a two-digit countdown number on the full OLED screen.
-  * @param  value Countdown value. Values greater than 99 are displayed as 99.
-  * @retval None.
+  * @brief  在OLED屏幕上显示两位倒计时数字。
+  * @param  value 倒计时数值，超过99则显示为99。
+  * @retval 无。
   */
 void OLED_ShowCountdown(uint8_t value);
 

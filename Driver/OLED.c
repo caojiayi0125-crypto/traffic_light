@@ -1,19 +1,26 @@
 #include "OLED.h"
 #include "OLED_Font.h"
 
+/** @brief OLED屏幕宽度（像素）。 */
 #define OLED_WIDTH             128
+/** @brief OLED页数（SSD1306每页8像素高）。 */
 #define OLED_PAGE_COUNT        8
+/** @brief OLED的I2C从机地址。 */
 #define OLED_I2C_ADDRESS       0x78
+/** @brief 两位数字之间的间距（像素）。 */
 #define OLED_DIGIT_GAP         8
+/** @brief 倒计时数字的起始X坐标（居中）。 */
 #define OLED_COUNTDOWN_X       ((OLED_WIDTH - (OLED_DIGIT_WIDTH * 2) - OLED_DIGIT_GAP) / 2)
 
+/** @brief 写SCL引脚电平。 */
 #define OLED_W_SCL(x)          GPIO_WriteBit(OLED_GPIO_PORT, OLED_SCL_GPIO_PIN, (BitAction)(x))
+/** @brief 写SDA引脚电平。 */
 #define OLED_W_SDA(x)          GPIO_WriteBit(OLED_GPIO_PORT, OLED_SDA_GPIO_PIN, (BitAction)(x))
 
 /**
-  * @brief  Initialize GPIO pins used by OLED software I2C.
-  * @param  None.
-  * @retval None.
+  * @brief  初始化OLED软件I2C所用的GPIO引脚。
+  * @param  无。
+  * @retval 无。
   */
 static void OLED_I2C_Init(void)
 {
@@ -31,9 +38,9 @@ static void OLED_I2C_Init(void)
 }
 
 /**
-  * @brief  Generate software I2C start condition.
-  * @param  None.
-  * @retval None.
+  * @brief  软件I2C产生起始信号。
+  * @param  无。
+  * @retval 无。
   */
 static void OLED_I2C_Start(void)
 {
@@ -44,9 +51,9 @@ static void OLED_I2C_Start(void)
 }
 
 /**
-  * @brief  Generate software I2C stop condition.
-  * @param  None.
-  * @retval None.
+  * @brief  软件I2C产生停止信号。
+  * @param  无。
+  * @retval 无。
   */
 static void OLED_I2C_Stop(void)
 {
@@ -56,9 +63,9 @@ static void OLED_I2C_Stop(void)
 }
 
 /**
-  * @brief  Send one byte through software I2C.
-  * @param  byte Byte to send.
-  * @retval None.
+  * @brief  通过软件I2C发送一个字节。
+  * @param  byte 待发送的字节。
+  * @retval 无。
   */
 static void OLED_I2C_SendByte(uint8_t byte)
 {
@@ -76,9 +83,9 @@ static void OLED_I2C_SendByte(uint8_t byte)
 }
 
 /**
-  * @brief  Write one command byte to the OLED controller.
-  * @param  command Command byte.
-  * @retval None.
+  * @brief  向SSD1306控制器写入一个命令字节。
+  * @param  command 命令字节。
+  * @retval 无。
   */
 static void OLED_WriteCommand(uint8_t command)
 {
@@ -90,9 +97,9 @@ static void OLED_WriteCommand(uint8_t command)
 }
 
 /**
-  * @brief  Write one data byte to the OLED controller.
-  * @param  data Data byte.
-  * @retval None.
+  * @brief  向SSD1306控制器写入一个数据字节。
+  * @param  data 数据字节。
+  * @retval 无。
   */
 static void OLED_WriteData(uint8_t data)
 {
@@ -104,10 +111,10 @@ static void OLED_WriteData(uint8_t data)
 }
 
 /**
-  * @brief  Set SSD1306 page and column cursor.
-  * @param  page Page index, range 0 to 7.
-  * @param  column Column index, range 0 to 127.
-  * @retval None.
+  * @brief  设置SSD1306的页和列光标位置。
+  * @param  page 页索引，取值范围0~7。
+  * @param  column 列索引，取值范围0~127。
+  * @retval 无。
   */
 static void OLED_SetCursor(uint8_t page, uint8_t column)
 {
@@ -117,9 +124,9 @@ static void OLED_SetCursor(uint8_t page, uint8_t column)
 }
 
 /**
-  * @brief  Fill the whole OLED screen with one byte pattern.
-  * @param  data Page byte to write across the screen.
-  * @retval None.
+  * @brief  用指定字节填充整个OLED屏幕。
+  * @param  data 填充用的页字节。
+  * @retval 无。
   */
 static void OLED_Fill(uint8_t data)
 {
@@ -137,11 +144,11 @@ static void OLED_Fill(uint8_t data)
 }
 
 /**
-  * @brief  Write one page row for a two-digit countdown value.
-  * @param  page Page index, range 0 to 7.
-  * @param  tens Tens digit, range 0 to 9.
-  * @param  ones Ones digit, range 0 to 9.
-  * @retval None.
+  * @brief  写入两位倒计时数字中某一页的数据。
+  * @param  page 页索引，取值范围0~7。
+  * @param  tens 十位数字，取值范围0~9。
+  * @param  ones 个位数字，取值范围0~9。
+  * @retval 无。
   */
 static void OLED_WriteCountdownPage(uint8_t page, uint8_t tens, uint8_t ones)
 {
@@ -177,9 +184,9 @@ static void OLED_WriteCountdownPage(uint8_t page, uint8_t tens, uint8_t ones)
 }
 
 /**
-  * @brief  Clear the whole OLED screen.
-  * @param  None.
-  * @retval None.
+  * @brief  清除整个OLED屏幕（全写0）。
+  * @param  无。
+  * @retval 无。
   */
 void OLED_Clear(void)
 {
@@ -187,9 +194,9 @@ void OLED_Clear(void)
 }
 
 /**
-  * @brief  Show a two-digit countdown number on the full OLED screen.
-  * @param  value Countdown value. Values greater than 99 are displayed as 99.
-  * @retval None.
+  * @brief  在OLED屏幕上显示两位倒计时数字。
+  * @param  value 倒计时数值，超过99则显示为99。
+  * @retval 无。
   */
 void OLED_ShowCountdown(uint8_t value)
 {
@@ -212,9 +219,10 @@ void OLED_ShowCountdown(uint8_t value)
 }
 
 /**
-  * @brief  Initialize OLED GPIO and controller.
-  * @param  None.
-  * @retval None.
+  * @brief  初始化OLED的GPIO引脚及SSD1306控制器。
+  * @note   上电延时后依次发送SSD1306初始化命令序列，最后清屏。
+  * @param  无。
+  * @retval 无。
   */
 void OLED_Init(void)
 {

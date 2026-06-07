@@ -1,9 +1,9 @@
 #include "LED.h"
 
 /**
-  * @brief  Get the GPIO port for the specified LED.
-  * @param  led LED identifier.
-  * @retval GPIO port pointer. Returns 0 for an invalid LED value.
+  * @brief  获取指定LED对应的GPIO端口。
+  * @param  led LED标识符。
+  * @retval GPIO端口指针，无效LED时返回0。
   */
 static GPIO_TypeDef *LED_GetPort(LED_TypeDef led)
 {
@@ -17,9 +17,9 @@ static GPIO_TypeDef *LED_GetPort(LED_TypeDef led)
 }
 
 /**
-  * @brief  Get the GPIO pin for the specified LED.
-  * @param  led LED identifier.
-  * @retval GPIO pin mask. Returns 0 for an invalid LED value.
+  * @brief  获取指定LED对应的GPIO引脚。
+  * @param  led LED标识符。
+  * @retval GPIO引脚掩码，无效LED时返回0。
   */
 static uint16_t LED_GetPin(LED_TypeDef led)
 {
@@ -33,10 +33,10 @@ static uint16_t LED_GetPin(LED_TypeDef led)
 }
 
 /**
-  * @brief  Initialize all traffic-light LED GPIO pins.
-  * @param  None.
-  * @retval None.
-  * @note   LEDs are active-low, so this function turns all LEDs off after init.
+  * @brief  初始化所有交通灯LED的GPIO引脚。
+  * @param  无。
+  * @retval 无。
+  * @note   LED为低电平点亮，初始化完成后所有LED处于熄灭状态。
   */
 void LED_Init(void)
 {
@@ -55,9 +55,9 @@ void LED_Init(void)
 }
 
 /**
-  * @brief  Turn on the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  点亮指定LED。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_on(LED_TypeDef led)
 {
@@ -71,9 +71,9 @@ void led_on(LED_TypeDef led)
 }
 
 /**
-  * @brief  Turn off the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  熄灭指定LED。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_off(LED_TypeDef led)
 {
@@ -87,9 +87,9 @@ void led_off(LED_TypeDef led)
 }
 
 /**
-  * @brief  Toggle the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  翻转指定LED的亮灭状态。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_turn(LED_TypeDef led)
 {

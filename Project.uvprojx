@@ -729,6 +729,18 @@
         </Group>
         <Group>
           <GroupName>App</GroupName>
+          <Files>
+            <File>
+              <FileName>traffic_light.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\App\traffic_light.c</FilePath>
+            </File>
+            <File>
+              <FileName>traffic_light.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\App\traffic_light.h</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>
