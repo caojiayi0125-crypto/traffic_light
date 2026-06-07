@@ -7,8 +7,8 @@
 #define OLED_DIGIT_GAP         8
 #define OLED_COUNTDOWN_X       ((OLED_WIDTH - (OLED_DIGIT_WIDTH * 2) - OLED_DIGIT_GAP) / 2)
 
-#define OLED_W_SCL(x)          GPIO_WriteBit(GPIOB, GPIO_Pin_8, (BitAction)(x))
-#define OLED_W_SDA(x)          GPIO_WriteBit(GPIOB, GPIO_Pin_9, (BitAction)(x))
+#define OLED_W_SCL(x)          GPIO_WriteBit(OLED_GPIO_PORT, OLED_SCL_GPIO_PIN, (BitAction)(x))
+#define OLED_W_SDA(x)          GPIO_WriteBit(OLED_GPIO_PORT, OLED_SDA_GPIO_PIN, (BitAction)(x))
 
 /**
   * @brief  Initialize GPIO pins used by OLED software I2C.
@@ -19,12 +19,12 @@ static void OLED_I2C_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	RCC_APB2PeriphClockCmd(OLED_GPIO_CLOCK, ENABLE);
 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = OLED_SCL_GPIO_PIN | OLED_SDA_GPIO_PIN;
+	GPIO_Init(OLED_GPIO_PORT, &GPIO_InitStructure);
 
 	OLED_W_SCL(1);
 	OLED_W_SDA(1);

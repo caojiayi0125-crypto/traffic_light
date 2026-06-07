@@ -3,6 +3,11 @@
 
 #include "stm32f10x.h"
 
+#define OLED_GPIO_CLOCK     RCC_APB2Periph_GPIOB
+#define OLED_GPIO_PORT      GPIOB
+#define OLED_SCL_GPIO_PIN   GPIO_Pin_8
+#define OLED_SDA_GPIO_PIN   GPIO_Pin_9
+
 /**
   * @brief  Initialize OLED GPIO and controller.
   * @param  None.
