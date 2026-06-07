@@ -1,3 +1,10 @@
+/**
+  * @file    controller.c
+  * @brief   顶层统筹调度模块实现。
+  * @note    负责初始化所有子系统（LED / OLED / 串口 / 定时器 / 调度器 / 命令），
+  *          并在主循环中协调定时器走秒、硬件刷新和命令处理。
+  */
+
 #include "controller.h"
 #include "LED.h"
 #include "OLED.h"
@@ -6,6 +13,13 @@
 #include "scheduler.h"
 #include "command.h"
 
+/**
+  * @brief  根据调度器状态更新LED硬件。
+  * @note   夜间模式：红绿灯全灭，黄灯按闪烁标志亮灭。
+  *         其他模式：调用 set_led_by_state 映射灯色。
+  * @param  无。
+  * @retval 无。
+  */
 static void update_leds(void)
 {
 	if (Sched_GetMode() == MODE_NIGHT) {
@@ -21,6 +35,14 @@ static void update_leds(void)
 	}
 }
 
+/**
+  * @brief  通过串口打印当前灯色状态和倒计时。
+  * @note   格式示例：
+  *         - [NORMAL|GREEN] Countdown: 25s | R:OFF Y:OFF G:ON
+  *         - [NIGHT] Blinking Yellow | R:OFF Y:OFF G:OFF
+  * @param  无。
+  * @retval 无。
+  */
 static void print_status(void)
 {
 	TrafficState state    = Sched_GetState();
@@ -45,6 +67,12 @@ static void print_status(void)
 	}
 }
 
+/**
+  * @brief  刷新OLED显示倒计时。
+  * @note   夜间模式显示 "00"，其他模式显示当前倒计时数值。
+  * @param  无。
+  * @retval 无。
+  */
 static void update_oled(void)
 {
 	if (Sched_GetMode() == MODE_NIGHT) {
@@ -54,6 +82,13 @@ static void update_oled(void)
 	}
 }
 
+/**
+  * @brief  按顺序初始化所有子系统。
+  * @note   顺序：LED → OLED → Serial → TIM2 → Scheduler → Command。
+  *         串口必须先于命令系统初始化，否则欢迎信息无法输出。
+  * @param  无。
+  * @retval 无。
+  */
 void Ctrl_Init(void)
 {
 	LED_Init();
@@ -64,6 +99,13 @@ void Ctrl_Init(void)
 	Cmd_Init();
 }
 
+/**
+  * @brief  永不返回的主循环。
+  * @note   tim1sFlag 由 TIM2 中断置位，主循环检测后清零并驱动一整套刷新。
+  *          Cmd_Process 不受 tim1sFlag 门控，保证串口交互低延迟。
+  * @param  无。
+  * @retval 无。
+  */
 void Ctrl_Run(void)
 {
 	while (1) {
