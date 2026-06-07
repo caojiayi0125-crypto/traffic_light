@@ -3,54 +3,54 @@
 
 #include "stm32f10x.h"
 
-/** @brief Red LED GPIO port. */
+/** @brief 红色LED GPIO端口。 */
 #define LED_RED_GPIO_PORT     GPIOA
-/** @brief Red LED GPIO pin. */
+/** @brief 红色LED GPIO引脚。 */
 #define LED_RED_GPIO_PIN      GPIO_Pin_4
-/** @brief Yellow LED GPIO port. */
+/** @brief 黄色LED GPIO端口。 */
 #define LED_YELLOW_GPIO_PORT  GPIOA
-/** @brief Yellow LED GPIO pin. */
+/** @brief 黄色LED GPIO引脚。 */
 #define LED_YELLOW_GPIO_PIN   GPIO_Pin_5
-/** @brief Green LED GPIO port. */
+/** @brief 绿色LED GPIO端口。 */
 #define LED_GREEN_GPIO_PORT   GPIOA
-/** @brief Green LED GPIO pin. */
+/** @brief 绿色LED GPIO引脚。 */
 #define LED_GREEN_GPIO_PIN    GPIO_Pin_6
 
 /**
-  * @brief LED identifier.
+  * @brief LED 标识符枚举。
   */
 typedef enum
 {
-	LED_RED = 0,  /**< Red LED. */
-	LED_YELLOW,   /**< Yellow LED. */
-	LED_GREEN     /**< Green LED. */
+	LED_RED = 0,  /**< 红色LED。 */
+	LED_YELLOW,   /**< 黄色LED。 */
+	LED_GREEN     /**< 绿色LED。 */
 } LED_TypeDef;
 
 /**
-  * @brief  Initialize all LED GPIO pins.
-  * @param  None.
-  * @retval None.
+  * @brief  初始化所有LED的GPIO引脚。
+  * @param  无。
+  * @retval 无。
   */
 void LED_Init(void);
 
 /**
-  * @brief  Turn on the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  点亮指定LED。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_on(LED_TypeDef led);
 
 /**
-  * @brief  Turn off the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  熄灭指定LED。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_off(LED_TypeDef led);
 
 /**
-  * @brief  Toggle the specified LED.
-  * @param  led LED identifier.
-  * @retval None.
+  * @brief  翻转指定LED的亮灭状态。
+  * @param  led LED标识符。
+  * @retval 无。
   */
 void led_turn(LED_TypeDef led);
 
